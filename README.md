@@ -12,13 +12,13 @@
   1. Clone
 
       ```bash
-        git clone https://github.com/ariefsn/gom.git
+        git clone https://github.com/ariefsn/bukuku.git
       ```
-
+  
   2. Docker Compose
 
       ```bash
-        docker-compose up
+        cd bukuku/ && docker-compose up
       ```
 
 ### Endpoints
