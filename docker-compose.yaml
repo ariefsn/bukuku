@@ -1,0 +1,65 @@
+version: '3.7'
+
+services:
+  database-service:
+    image: mariadb:latest
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - /mnt/F80A815E0A811AB0/Work/Docker/Volume/mariadb:/var/lib/mysql
+      - ./database/schema.sql:/data/application/init.sql
+    command: --init-file /data/application/init.sql
+    ports:
+      - 3306:3306
+    networks:
+      - bookstore-network
+
+  auth-service:
+    build: ./auth/
+    restart: unless-stopped
+    environment:
+      - PORT=3002
+      - DB_CONN_STRING=root:root@tcp(database-service:3306)/book_store?charset=utf8mb4&parseTime=true
+      - DB_TIMEZONE=Asia/Jakarta
+    ports:
+      - 3002:3002
+    networks:
+      - bookstore-network
+    depends_on:
+      - database-service
+
+  book-service:
+    build: ./book/
+    restart: unless-stopped
+    environment:
+      - PORT=3003
+      - DB_CONN_STRING=root:root@tcp(database-service:3306)/book_store?charset=utf8mb4&parseTime=true
+      - DB_TIMEZONE=Asia/Jakarta
+      - URL_AUTH=auth-service:3002
+    ports:
+      - 3003:3003
+    networks:
+      - bookstore-network
+    depends_on:
+      - database-service
+      - auth-service
+    
+  api-gateway:
+    build: ./api/
+    restart: unless-stopped
+    environment:
+      - PORT=3001
+      - JWT_SECRET=KeepItSecret
+      - URL_AUTH=auth-service:3002
+      - URL_BOOK=book-service:3003
+    ports:
+      - 3001:3001
+    networks:
+      - bookstore-network
+    depends_on:
+      - database-service
+      - auth-service
+
+networks:
+  bookstore-network:
