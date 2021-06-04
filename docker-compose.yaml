@@ -23,7 +23,7 @@ services:
       - DB_CONN_STRING=root:root@tcp(database-service:3306)/book_store?charset=utf8mb4&parseTime=true
       - DB_TIMEZONE=Asia/Jakarta
     ports:
-      - 3002:3002
+      - 3002
     networks:
       - bookstore-network
     depends_on:
@@ -38,7 +38,7 @@ services:
       - DB_TIMEZONE=Asia/Jakarta
       - URL_AUTH=auth-service:3002
     ports:
-      - 3003:3003
+      - 3003
     networks:
       - bookstore-network
     depends_on:
